@@ -11,17 +11,17 @@ class HomePage extends StatelessWidget {
     // Simulamos los datos aquí (en el futuro vendrán de un servicio/API)
     final List<Actor> actors = [
       Actor(
-          name: "Golshifteh",
-          surname: "Farahani",
-          imageUrl: "https://image.tmdb.org/t/p/w500/AhX8mXwX1hC8tN8YqFq2r6q6q5y.jpg"),
+          name: "Miguel",
+          surname: "Campos",
+          imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdcRXoBU4UZoOLrBmDtkVmy0NoKHwmlXVgaw&s"),
       Actor(
-          name: "Navid",
-          surname: "Mohammadzadeh",
-          imageUrl: "https://image.tmdb.org/t/p/w500/kZ9X4j2j5X6j5X6j5X6j5X6j5X6.jpg"),
+          name: "Angel",
+          surname: "Naranjo",
+          imageUrl: "https://triana.salesianos.edu/wp-content/uploads/photo-gallery/2019.06.19._Despedida_Ciclos_Formativos_2019/20190619_DespedidaCiclos_4.jpg?bwg=1561502552"),
       Actor(
-          name: "Taraneh",
-          surname: "Alidoosti",
-          imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Taraneh_Alidoosti_Cannes_2016.jpg/800px-Taraneh_Alidoosti_Cannes_2016.jpg"),
+          name: "Luis",
+          surname: "Miguel",
+          imageUrl: "https://cdn.openwebinars.net/media/teachers/luis-miguel-lopez-f2.png"),
     ];
 
     return Scaffold(
@@ -42,11 +42,11 @@ class HomePage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Best Iranian Actors\nand Actresses",
+                  "Salesiano's teachers",
                   style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, height: 1.1),
                 ),
                 SizedBox(height: 8),
-                Text("March 2020", style: TextStyle(color: Colors.grey)),
+                Text("March 2025", style: TextStyle(color: Colors.grey)),
               ],
             ),
           ),
