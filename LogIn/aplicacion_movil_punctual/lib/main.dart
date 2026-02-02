@@ -1,4 +1,5 @@
 import 'package:aplicacion_movil_punctual/Screens/Log%20in/login_screen.dart';
+import 'package:aplicacion_movil_punctual/Screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 // Importa la ruta exacta donde guardaste el archivo
 void main() {
@@ -18,7 +19,10 @@ class MainApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
       ),
       // Aquí llamas a la clase que creamos en la otra carpeta
-      home: const LoginScreen(), 
+      home: const LoginScreen(),
+      routes: {
+        '/dashboard': (_) => const DashboardScreen(),
+      }, 
     );
   }
 }

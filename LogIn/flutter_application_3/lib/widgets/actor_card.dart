@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_3/models/actors.dart';
 import '../models/actor.dart'; // Importamos el modelo
 
 class ActorCard extends StatelessWidget {
