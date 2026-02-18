@@ -1,5 +1,6 @@
 import 'package:aplicacion_movil_punctual/Screens/Log%20in/login_screen.dart';
 import 'package:aplicacion_movil_punctual/Screens/dashboard_screen.dart';
+import 'package:aplicacion_movil_punctual/Screens/check_in_screen.dart';
 import 'package:flutter/material.dart';
 // Importa la ruta exacta donde guardaste el archivo
 void main() {
@@ -22,6 +23,7 @@ class MainApp extends StatelessWidget {
       home: const LoginScreen(),
       routes: {
         '/dashboard': (_) => const DashboardScreen(),
+        '/checkin': (_) => const CheckInScreen(),
       }, 
     );
   }

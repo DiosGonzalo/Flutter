@@ -289,7 +289,9 @@ class _ActionsGrid extends StatelessWidget {
                 icon: Icons.login_rounded,
                 title: 'Entrada',
                 subtitle: 'Registrar entrada/salida',
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).pushNamed('/checkin');
+                },
               ),
             ),
             const SizedBox(width: 12),
