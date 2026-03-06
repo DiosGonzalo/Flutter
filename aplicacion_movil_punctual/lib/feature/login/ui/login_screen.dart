@@ -1,3 +1,7 @@
+import 'package:aplicacion_movil_punctual/config/app_routes.dart';
+import 'package:aplicacion_movil_punctual/core/service/api_client.dart';
+import 'package:aplicacion_movil_punctual/core/service/auth_api_service.dart';
+import 'package:aplicacion_movil_punctual/feature/login/bloc/login_view_state.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -9,15 +13,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  // Controladores
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final LoginViewState _viewState = const LoginViewState();
+  final AuthApiService _authApiService = AuthApiService();
+  bool _isSubmitting = false;
 
   final bool _isObscured = true;
 
-  // Colores base del diseño
-  static const Color _primaryBlue = Color(0xFF2563EB); // botón principal
+  static const Color _primaryBlue = Color(0xFF2563EB);
   static const Color _bgDark1 = Color(0xFF080B13);
   static const Color _bgDark2 = Color(0xFF0E1220);
 
@@ -28,23 +32,67 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // Lógica simulada de login
-  void _submitLogin() {
-    if (_formKey.currentState!.validate()) {
-      // AQUÍ conectarás más adelante con tu backend (Spring Boot / FastAPI)
-      // ignore: avoid_print
-      print("Enviando a API: ${_emailController.text}");
+  Future<void> _submitLogin() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final isValid = _viewState.isValidCredentials(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+
+    if (!isValid) {
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      await _authApiService.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (!mounted) {
+        return;
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Conectando con el servidor...'),
+          content: Text('Sesión iniciada correctamente.'),
           backgroundColor: Colors.black87,
           behavior: SnackBarBehavior.floating,
         ),
       );
 
-      // Navega al dashboard tras la validación
-      Navigator.of(context).pushReplacementNamed('/dashboard');
+      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No se pudo conectar con el servidor.'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
     }
   }
 
@@ -74,10 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     _LogoBadge(),
                     const SizedBox(height: 20),
-                    Text(
+                    const Text(
                       'PUNCTUAL',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 36,
                         fontWeight: FontWeight.w800,
@@ -85,9 +133,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         _TinyLine(),
                         SizedBox(width: 12),
                         Text(
@@ -103,8 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     const SizedBox(height: 32),
-
-                    // Email
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
@@ -115,13 +161,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icons.alternate_email_rounded,
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Campo requerido';
+                        if (value == null || value.isEmpty) {
+                          return 'Campo requerido';
+                        }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Password
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _isObscured,
@@ -132,17 +178,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         icon: Icons.lock_outline_rounded,
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Campo requerido';
+                        if (value == null || value.isEmpty) {
+                          return 'Campo requerido';
+                        }
                         return null;
                       },
                       onFieldSubmitted: (_) => _submitLogin(),
                     ),
-
                     const SizedBox(height: 24),
                     SizedBox(
                       height: 54,
                       child: ElevatedButton(
-                        onPressed: _submitLogin,
+                        onPressed: _isSubmitting ? null : _submitLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primaryBlue,
                           foregroundColor: Colors.white,
@@ -151,10 +198,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           elevation: 0,
                         ),
-                        child: Row(
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             Text(
                               'Iniciar Sesión',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -165,7 +221,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 20),
                     TextButton(
                       onPressed: () {},
@@ -182,7 +237,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Estilo de inputs acorde al diseño oscuro
   InputDecoration _darkInputDecoration({required String hint, required IconData icon}) {
     return InputDecoration(
       hintText: hint,
@@ -207,7 +261,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Badge con el ícono central
 class _LogoBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -237,6 +290,7 @@ class _LogoBadge extends StatelessWidget {
 
 class _TinyLine extends StatelessWidget {
   const _TinyLine();
+
   @override
   Widget build(BuildContext context) {
     return Container(
